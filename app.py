@@ -28,15 +28,15 @@ col1, col2, col3 = st.sidebar.columns(3)
 with col1:
     if st.button('🇧🇷'):
         st.session_state.language = 'pt'
-        st.experimental_rerun()
+        st.rerun()
 with col2:
     if st.button('🇬🇧'):
         st.session_state.language = 'en'
-        st.experimental_rerun()
+        st.rerun()
 with col3:
     if st.button('🇪🇸'):
         st.session_state.language = 'es'
-        st.experimental_rerun()
+        st.rerun()
 
 # API Key Input
 api_key = st.sidebar.text_input(lang['api_key_label'], type='password')
