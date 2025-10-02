@@ -1,0 +1,15 @@
+{
+    "title": "Agente de Análise de CSV",
+    "description": "Faça upload de um arquivo CSV e faça perguntas sobre seus dados. O agente irá analisá-los, gerar gráficos e fornecer conclusões.",
+    "settings": "Configurações",
+    "language_selection": "Idiomas",
+    "api_key_label": "Insira sua chave de API do Google Gemini",
+    "file_uploader_label": "Faça upload do seu arquivo .csv",
+    "file_upload_success": "Arquivo carregado com sucesso!",
+    "chat_input_placeholder": "Faça uma pergunta sobre o arquivo...",
+    "thinking": "Pensando...",
+    "error_executing_code": "Erro ao executar o código",
+    "error_reading_file": "Erro ao ler o arquivo",
+    "upload_file_to_start": "Por favor, faça upload de um arquivo CSV para começar a análise.",
+    "agent_prompt": "Você é um agente de análise de dados. O usuário forneceu um arquivo CSV e uma consulta. Analise a consulta e os dados e gere um código Python para responder à pergunta. O código deve usar o dataframe `df` que já está carregado. Se for necessário gerar um gráfico, use `st.pyplot(fig)` para exibi-lo. Se a resposta for um texto, apenas o escreva."
+}
