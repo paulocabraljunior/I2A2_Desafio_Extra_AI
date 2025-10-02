@@ -41,6 +41,17 @@ with col3:
 # API Key Input
 api_key = st.sidebar.text_input(lang['api_key_label'], type='password')
 
+# Model selection
+model_options = ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-2.5-pro']
+if 'model' not in st.session_state:
+    st.session_state.model = model_options[0]
+
+st.session_state.model = st.sidebar.selectbox(
+    lang['model_selection_label'],
+    model_options,
+    index=model_options.index(st.session_state.model)
+)
+
 # File Uploader
 uploaded_file = st.sidebar.file_uploader(lang['file_uploader_label'], type=['csv'])
 
@@ -88,7 +99,7 @@ if uploaded_file is not None:
             with st.chat_message('assistant'):
                 with st.spinner(lang['thinking']):
                     try:
-                        model = genai.GenerativeModel('gemini-pro')
+                        model = genai.GenerativeModel(st.session_state.model)
                         # Build conversation history for the model
                         model_history = []
                         for entry in st.session_state.history:

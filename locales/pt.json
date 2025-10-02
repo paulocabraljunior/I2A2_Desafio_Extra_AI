@@ -5,6 +5,7 @@
     "language_selection": "Idiomas",
     "api_key_label": "Insira sua chave de API do Google Gemini",
     "file_uploader_label": "Faça upload do seu arquivo .csv",
+    "model_selection_label": "Escolha o modelo",
     "file_upload_success": "Arquivo carregado com sucesso!",
     "chat_input_placeholder": "Faça uma pergunta sobre o arquivo...",
     "thinking": "Pensando...",
