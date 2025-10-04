@@ -5,11 +5,12 @@
     "language_selection": "Idiomas",
     "api_key_label": "Introduce tu clave de API de Google Gemini",
     "file_uploader_label": "Sube tu archivo .csv",
+    "model_selection_label": "Elige el modelo",
     "file_upload_success": "¡Archivo subido con éxito!",
     "chat_input_placeholder": "Haz una pregunta sobre el archivo...",
     "thinking": "Pensando...",
     "error_executing_code": "Error al ejecutar el código",
     "error_reading_file": "Error al leer el archivo",
     "upload_file_to_start": "Por favor, sube un archivo CSV para iniciar el análisis.",
-    "agent_prompt": "Eres un agente de análisis de datos. El usuario ha proporcionado un archivo CSV y una consulta. Analiza la consulta y los datos, y genera código Python para responder a la pregunta. El código debe usar el dataframe `df` que ya está cargado. Si se necesita un gráfico, usa `st.pyplot(fig)` para mostrarlo. Si la respuesta es texto, simplemente escríbela."
+    "agent_prompt": "Eres un agente de análisis de datos. El usuario ha proporcionado un archivo CSV y una consulta. Analiza la consulta y los datos, y genera código Python para responder a la pregunta. El código debe usar el dataframe `df` que ya está cargado. Puedes usar las siguientes librerías: pandas, numpy, matplotlib, seaborn y scikit-learn. Si se necesita un gráfico, usa `st.pyplot(fig)` para mostrarlo. Si la respuesta es texto, simplemente escríbela."
 }

@@ -3,6 +3,8 @@ import pandas as pd
 import google.generativeai as genai
 import json
 import os
+import io
+import contextlib
 
 st.set_page_config(layout="wide", page_title="CSV Analysis Agent")
 
@@ -28,18 +30,29 @@ col1, col2, col3 = st.sidebar.columns(3)
 with col1:
     if st.button('🇧🇷'):
         st.session_state.language = 'pt'
-        st.experimental_rerun()
+        st.rerun()
 with col2:
     if st.button('🇬🇧'):
         st.session_state.language = 'en'
-        st.experimental_rerun()
+        st.rerun()
 with col3:
     if st.button('🇪🇸'):
         st.session_state.language = 'es'
-        st.experimental_rerun()
+        st.rerun()
 
 # API Key Input
 api_key = st.sidebar.text_input(lang['api_key_label'], type='password')
+
+# Model selection
+model_options = ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-2.5-pro']
+if 'model' not in st.session_state:
+    st.session_state.model = model_options[0]
+
+st.session_state.model = st.sidebar.selectbox(
+    lang['model_selection_label'],
+    model_options,
+    index=model_options.index(st.session_state.model)
+)
 
 # File Uploader
 uploaded_file = st.sidebar.file_uploader(lang['file_uploader_label'], type=['csv'])
@@ -88,7 +101,7 @@ if uploaded_file is not None:
             with st.chat_message('assistant'):
                 with st.spinner(lang['thinking']):
                     try:
-                        model = genai.GenerativeModel('gemini-pro')
+                        model = genai.GenerativeModel(st.session_state.model)
                         # Build conversation history for the model
                         model_history = []
                         for entry in st.session_state.history:
@@ -123,22 +136,36 @@ if uploaded_file is not None:
 
                             # Prepare the execution environment
                             local_vars = {'df': df, 'st': st, 'pd': pd, 'fig': None, 'plt': None}
-
-                            # Import matplotlib dynamically
                             exec("import matplotlib.pyplot as plt", local_vars)
 
-                            # Execute the code
-                            exec(code, {}, local_vars)
+                            # Capture the output of the executed code
+                            stdout_io = io.StringIO()
+                            with contextlib.redirect_stdout(stdout_io):
+                                exec(code, {}, local_vars)
+
+                            captured_output = stdout_io.getvalue()
+
+                            # Display the captured output
+                            if captured_output:
+                                st.text(captured_output)
 
                             # The executed code is expected to handle the output
                             # Check if a plot was generated
                             if local_vars.get('fig'):
                                 st.pyplot(local_vars['fig'])
 
-                            # Add the full response to history for context
+                            # Construct the content to display and save in history
+                            assistant_response_content = ""
+                            if captured_output:
+                                assistant_response_content += f"```\n{captured_output}\n```\n"
+
+                            # Add the textual part of the response, if any, outside the code block
+                            response_text_part = response.text.split("```python")[0].strip()
+                            if response_text_part:
+                                assistant_response_content += response_text_part
+
+                            st.markdown(assistant_response_content)
                             st.session_state.history.append({'role': 'assistant', 'content': response.text})
-                            # Also display the textual part of the response
-                            st.markdown(response.text)
 
                         else:
                              st.markdown(response.text)
