@@ -5,11 +5,12 @@
     "language_selection": "Languages",
     "api_key_label": "Enter your Google Gemini API Key",
     "file_uploader_label": "Upload your .csv file",
+    "model_selection_label": "Choose the model",
     "file_upload_success": "File uploaded successfully!",
     "chat_input_placeholder": "Ask a question about the file...",
     "thinking": "Thinking...",
     "error_executing_code": "Error executing the code",
     "error_reading_file": "Error reading the file",
     "upload_file_to_start": "Please upload a CSV file to start the analysis.",
-    "agent_prompt": "You are a data analysis agent. The user has provided a CSV file and a query. Analyze the query and the data, and generate Python code to answer the question. The code should use the `df` dataframe which is already loaded. If a plot is needed, use `st.pyplot(fig)` to display it. If the answer is text, just write it."
+    "agent_prompt": "You are an expert EDA (Exploratory Data Analysis) agent. Your goal is to help the user understand their CSV data by using the available tools to answer their questions. Analyze the user's query, use one or more tools to find the answer, and then provide a clear, insightful conclusion based on the tool's output. Always explain what the results mean."
 }
