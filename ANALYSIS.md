@@ -1,27 +1,44 @@
-### 1. A Framework Escolhida
+# Análise da Estrutura do Projeto (Alpha.03)
 
-A framework principal escolhida para construir a interface de usuário e a interatividade da aplicação foi o **Streamlit**.
+Este documento descreve a arquitetura final da aplicação, explicando os componentes escolhidos e como eles interagem para criar a ferramenta de Análise Exploratória de Dados (EDA).
 
-O Streamlit é uma framework de código aberto em Python que permite criar e compartilhar aplicações web para ciência de dados e machine learning de forma rápida e com poucas linhas de código. Ele foi utilizado aqui para criar todos os elementos visuais, como a barra lateral, os botões, a área de upload de arquivos e a interface de chat.
+### 1. Framework Escolhida: Streamlit
 
-### 2. Como a Solução foi Estruturada
+A interface do usuário (frontend) foi construída inteiramente com **Streamlit**.
 
-A solução foi estruturada em um único arquivo principal (`app.py`) que gerencia tanto a interface do usuário quanto a lógica do backend. A estrutura pode ser dividida da seguinte forma:
+*   **Por quê?** Streamlit é uma framework Python de código aberto que se destaca pela sua simplicidade e rapidez para criar aplicações web interativas, especialmente para projetos de ciência de dados. Ele permite focar na lógica da análise de dados, gerando automaticamente os componentes visuais (botões, chat, gráficos) sem a necessidade de escrever código em HTML, CSS ou JavaScript.
 
-*   **Interface do Usuário (Frontend):**
-    *   **Barra Lateral:** Contém todos os controles principais: a seleção de idioma (com as bandeiras), o campo para a chave da API do Google Gemini, o seletor de modelo de IA e o uploader de arquivos CSV.
-    *   **Painel Principal:** Exibe o título, a descrição da aplicação e, o mais importante, a interface de chat onde o histórico da conversa é exibido e o usuário pode inserir novas perguntas.
+### 2. Estrutura da Solução: Agente de IA com Ferramentas
 
-*   **Lógica da Aplicação (Backend):**
-    *   **Gerenciamento de Estado:** O Streamlit utiliza o `st.session_state` para manter o estado da aplicação entre as interações do usuário, como o idioma selecionado, o histórico do chat e o DataFrame do CSV carregado.
-    *   **Internacionalização:** A aplicação suporta múltiplos idiomas (Português, Inglês, Espanhol) através de arquivos JSON localizados na pasta `locales/`. O texto da interface é carregado dinamicamente com base no idioma selecionado.
-    *   **Análise de Dados com IA:**
-        1.  Quando o usuário envia uma pergunta, a aplicação a envia para a **API do Google Gemini**, juntamente com o contexto dos dados do CSV (nomes das colunas e primeiras linhas).
-        2.  A IA é instruída a gerar um código Python para responder à pergunta. Para garantir a confiabilidade, a IA foi instruída a usar apenas um conjunto específico de bibliotecas (`pandas`, `numpy`, `matplotlib`, `seaborn`, `scikit-learn`).
-        3.  O código Python retornado pela IA é executado em um ambiente seguro.
-    *   **Execução e Exibição de Resultados:**
-        1.  Qualquer saída de texto do código (como a visualização de dados com `print(df.head())`) é capturada e exibida na interface de chat.
-        2.  Se o código gerar um gráfico (`matplotlib` ou `seaborn`), o gráfico é renderizado e exibido diretamente na aplicação.
+A solução foi arquitetada em torno de um **Agente de IA com Ferramentas (Tool-based Agent)**, uma abordagem moderna, segura e confiável.
 
-*   **Gerenciamento de Dependências:**
-    *   Todas as bibliotecas Python necessárias para o funcionamento do projeto (`streamlit`, `pandas`, `google-generativeai`, etc.) estão listadas no arquivo `requirements.txt`, facilitando a instalação e a configuração do ambiente.
+*   **Como Funciona:**
+    1.  **Interface do Usuário:** O usuário interage com a aplicação através de uma interface de chat simples.
+    2.  **Definição de Ferramentas:** No backend (`app.py`), definimos um conjunto de funções Python específicas para cada tarefa de análise (ex: `get_data_summary`, `plot_correlation_matrix`, `detect_outliers`).
+    3.  **Comunicação com a IA (Function Calling):**
+        *   Quando o usuário envia uma pergunta, a aplicação não pede para a IA gerar código. Em vez disso, ela envia a pergunta e a **lista de ferramentas disponíveis** para a API do Google Gemini.
+        *   O modelo Gemini, agindo como o "cérebro" do agente, decide qual a melhor ferramenta para responder à pergunta.
+    4.  **Execução Segura:** A aplicação executa **apenas** a função pré-definida que a IA escolheu, com os argumentos que ela sugeriu. Isso evita a execução de código arbitrário e inseguro.
+    5.  **Ciclo de Feedback:** O resultado da ferramenta (seja um resumo de dados ou uma mensagem de que um gráfico foi criado) é enviado de **volta** para a IA.
+    6.  **Resposta Final:** Com o resultado da ferramenta em mãos, a IA gera uma resposta final, em linguagem natural, explicando as conclusões para o usuário.
+
+*   **Por que essa estrutura?**
+    *   **Segurança:** Impede que a IA execute código malicioso ou com erros, pois ela está limitada a usar apenas as ferramentas que nós criamos.
+    *   **Confiabilidade:** Garante que as análises sejam sempre executadas da mesma forma, usando código testado, o que aumenta a precisão dos resultados.
+    *   **Memória e Contexto:** A aplicação envia o histórico da conversa para a IA, permitindo que o agente se lembre de análises anteriores e tire conclusões mais complexas e contextuais.
+    *   **Manutenibilidade:** Para adicionar novas funcionalidades, basta criar uma nova função-ferramenta e declará-la para a IA, tornando o projeto fácil de expandir.
+
+### 3. Fluxo de Interação do Usuário
+
+O fluxo de interação foi projetado para ser simples e intuitivo:
+
+1.  **Configuração Inicial:** O usuário abre a aplicação e, na barra lateral, insere sua chave de API do Google Gemini e seleciona o modelo de IA que deseja usar.
+2.  **Upload do Arquivo:** O usuário faz o upload de um arquivo CSV através da área de upload na barra lateral.
+3.  **Início da Análise:** Uma vez que o arquivo é carregado com sucesso, a interface de chat é ativada.
+4.  **Pergunta do Usuário:** O usuário digita uma pergunta em linguagem natural na caixa de chat (ex: "Qual a correlação entre as colunas?" ou "Me mostre os outliers da coluna 'idade'").
+5.  **Processamento do Agente:**
+    *   A aplicação envia a pergunta para a IA, que decide qual ferramenta usar (ex: `plot_correlation_matrix`).
+    *   A aplicação executa a ferramenta escolhida. Se for um gráfico, ele é exibido na tela.
+    *   O resultado da ferramenta é enviado de volta para a IA.
+6.  **Resposta e Conclusão:** A IA interpreta o resultado da ferramenta e gera uma resposta final em texto, explicando os resultados e fornecendo conclusões. Essa resposta é exibida na interface de chat.
+7.  **Ciclo Contínuo:** O usuário pode continuar fazendo mais perguntas, e o agente usará o histórico da conversa para fornecer respostas cada vez mais contextuais.
